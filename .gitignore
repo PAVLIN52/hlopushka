@@ -27,3 +27,9 @@ volumes/
 *.log
 .idea/
 .vscode/
+
+# Next.js и TypeScript
+next-env.d.ts
+.eslintcache
+playwright-report/
+test-results/
