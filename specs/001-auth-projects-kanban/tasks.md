@@ -41,15 +41,15 @@ Project Structure).
 
 **Purpose**: каркас монорепо и инструменты
 
-- [ ] T001 Создать корневой `package.json` с npm workspaces (`backend`, `frontend`, `shared`), скриптами `dev`, `build`, `test`, `lint` и `engines.node >=24` в `package.json`
-- [ ] T002 Создать общий `tsconfig.base.json` (strict, `noImplicitAny`, `exactOptionalPropertyTypes`) и пакет `shared` с `shared/package.json`, `shared/tsconfig.json`, `shared/src/index.ts`
-- [ ] T003 [P] Инициализировать NestJS 11 в `backend/` (`backend/package.json`, `backend/tsconfig.json` с алиасами `@/core`, `@/infrastructure`, `@/common`, `@/modules`, `@/config`; `backend/nest-cli.json`)
-- [ ] T004 [P] Инициализировать Next.js 15 (App Router, TypeScript, Tailwind 4) в `frontend/` с алиасом `@/*` → `frontend/src/*` в `frontend/tsconfig.json`
-- [ ] T005 [P] Настроить ESLint + Prettier, включая правило порядка импортов по группам из принципа VIII, в `eslint.config.mjs` и `.prettierrc`
-- [ ] T006 [P] Настроить Jest для бэкенда: проекты `core` (только `src/core/**/*.spec.ts`, без БД) и `e2e` (`test/**/*.e2e-spec.ts`), скрипты `test:core` и `test:e2e` в `backend/jest.config.ts`
-- [ ] T007 [P] Создать `.env.example` с комментариями: `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `FRONTEND_ORIGIN`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`
-- [ ] T008 Создать `docker-compose.yml` с сервисами `postgres:16` (с volume и healthcheck), `backend` и `frontend` (Dockerfile для каждого: `backend/Dockerfile`, `frontend/Dockerfile`; образы arm64-совместимые)
-- [ ] T009 [P] Создать каталоги документации `docs/uml/`, `docs/sequence/`, `docs/screenshots/001/`, `docs/report/` с `.gitkeep`
+- [X] T001 Создать корневой `package.json` с npm workspaces (`backend`, `frontend`, `shared`), скриптами `dev`, `build`, `test`, `lint` и `engines.node >=24` в `package.json`
+- [X] T002 Создать общий `tsconfig.base.json` (strict, `noImplicitAny`, `exactOptionalPropertyTypes`) и пакет `shared` с `shared/package.json`, `shared/tsconfig.json`, `shared/src/index.ts`
+- [X] T003 [P] Инициализировать NestJS 11 в `backend/` (`backend/package.json`, `backend/tsconfig.json` с алиасами `@/core`, `@/infrastructure`, `@/common`, `@/modules`, `@/config`; `backend/nest-cli.json`)
+- [X] T004 [P] Инициализировать Next.js 15 (App Router, TypeScript, Tailwind 4) в `frontend/` с алиасом `@/*` → `frontend/src/*` в `frontend/tsconfig.json`
+- [X] T005 [P] Настроить ESLint + Prettier, включая правило порядка импортов по группам из принципа VIII, в `eslint.config.mjs` и `.prettierrc`
+- [X] T006 [P] Настроить Jest для бэкенда: проекты `core` (только `src/core/**/*.spec.ts`, без БД) и `e2e` (`test/**/*.e2e-spec.ts`), скрипты `test:core` и `test:e2e` в `backend/jest.config.ts`
+- [X] T007 [P] Создать `.env.example` с комментариями: `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `FRONTEND_ORIGIN`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`
+- [X] T008 Создать `docker-compose.yml` с сервисами `postgres:16` (с volume и healthcheck), `backend` и `frontend` (Dockerfile для каждого: `backend/Dockerfile`, `frontend/Dockerfile`; образы arm64-совместимые)
+- [X] T009 [P] Создать каталоги документации `docs/uml/`, `docs/sequence/`, `docs/screenshots/001/`, `docs/report/` с `.gitkeep`
 
 ---
 
@@ -62,44 +62,44 @@ Project Structure).
 
 ### Общие типы
 
-- [ ] T010 [P] Описать перечисления `Role`, `Stage` (с массивом `STAGE_ORDER`), `TaskType`, `Priority` по таблице «Перечисления» из `data-model.md` в `shared/src/enums.ts`
-- [ ] T011 [P] Описать тип ответа об ошибке `ApiError { code, message, value }` и интерфейс `BoardEvent<T>` (contracts/realtime-events.md) в `shared/src/contracts/common.ts` и `shared/src/contracts/board-events.ts`
+- [X] T010 [P] Описать перечисления `Role`, `Stage` (с массивом `STAGE_ORDER`), `TaskType`, `Priority` по таблице «Перечисления» из `data-model.md` в `shared/src/enums.ts`
+- [X] T011 [P] Описать тип ответа об ошибке `ApiError { code, message, value }` и интерфейс `BoardEvent<T>` (contracts/realtime-events.md) в `shared/src/contracts/common.ts` и `shared/src/contracts/board-events.ts`
 
 ### Ядро: исключения (принцип III)
 
-- [ ] T012 [P] Тест: свойства `message`/`value`/`code`, цепочка `instanceof` для 5 наследников (включая `UnauthorizedException`), сохранение `name` и стека в `backend/src/core/exceptions/exceptions.spec.ts`
-- [ ] T013 Реализовать `CustomException extends Error` в `backend/src/core/exceptions/custom.exception.ts`
-- [ ] T014 [P] Реализовать наследников `NotFoundException`, `ValidationException`, `AccessDeniedException`, `ConflictException`, `UnauthorizedException` в `backend/src/core/exceptions/not-found.exception.ts`, `validation.exception.ts`, `access-denied.exception.ts`, `conflict.exception.ts`, `unauthorized.exception.ts` и реэкспорт в `backend/src/core/exceptions/index.ts`
-- [ ] T015 [P] Константы кодов ошибок из `data-model.md` §2.1 в `backend/src/core/exceptions/error-codes.ts`
+- [X] T012 [P] Тест: свойства `message`/`value`/`code`, цепочка `instanceof` для 5 наследников (включая `UnauthorizedException`), сохранение `name` и стека в `backend/src/core/exceptions/exceptions.spec.ts`
+- [X] T013 Реализовать `CustomException extends Error` в `backend/src/core/exceptions/custom.exception.ts`
+- [X] T014 [P] Реализовать наследников `NotFoundException`, `ValidationException`, `AccessDeniedException`, `ConflictException`, `UnauthorizedException` в `backend/src/core/exceptions/not-found.exception.ts`, `validation.exception.ts`, `access-denied.exception.ts`, `conflict.exception.ts`, `unauthorized.exception.ts` и реэкспорт в `backend/src/core/exceptions/index.ts`
+- [X] T015 [P] Константы кодов ошибок из `data-model.md` §2.1 в `backend/src/core/exceptions/error-codes.ts`
 
 ### Ядро: коллекции и интерфейс итератора (принципы II, VI)
 
-- [ ] T016 [P] Объявить `IIterator<T>` (`hasNext`, `next`, `reset`, `[Symbol.iterator]`) в `backend/src/core/iterators/iterator.interface.ts`
-- [ ] T017 [P] Объявить `IRepository<T, TCreate, TUpdate>` в `backend/src/core/collections/repository.interface.ts`
-- [ ] T018 [P] Тест `LinkedList<T>`: append, removeFirst, removeAfter (обрезка хвоста), size, итерация, `ITERATOR_EMPTY`/`ITERATOR_EXHAUSTED` в `backend/src/core/collections/linked-list.spec.ts`
-- [ ] T019 Реализовать `LinkedList<T>` с внутренним итератором, реализующим `IIterator<T>`, в `backend/src/core/collections/linked-list.ts`
-- [ ] T020 [P] Тест `PriorityQueue<T>`: порядок по компаратору, peek, dequeue из пустой очереди → `ValidationException` в `backend/src/core/collections/priority-queue.spec.ts`
-- [ ] T021 Реализовать `PriorityQueue<T>` (бинарная куча с компаратором) в `backend/src/core/collections/priority-queue.ts`, реэкспорт коллекций в `backend/src/core/collections/index.ts`
+- [X] T016 [P] Объявить `IIterator<T>` (`hasNext`, `next`, `reset`, `[Symbol.iterator]`) в `backend/src/core/iterators/iterator.interface.ts`
+- [X] T017 [P] Объявить `IRepository<T, TCreate, TUpdate>` в `backend/src/core/collections/repository.interface.ts`
+- [X] T018 [P] Тест `LinkedList<T>`: append, removeFirst, removeAfter (обрезка хвоста), size, итерация, `ITERATOR_EMPTY`/`ITERATOR_EXHAUSTED` в `backend/src/core/collections/linked-list.spec.ts`
+- [X] T019 Реализовать `LinkedList<T>` с внутренним итератором, реализующим `IIterator<T>`, в `backend/src/core/collections/linked-list.ts`
+- [X] T020 [P] Тест `PriorityQueue<T>`: порядок по компаратору, peek, dequeue из пустой очереди → `ValidationException` в `backend/src/core/collections/priority-queue.spec.ts`
+- [X] T021 Реализовать `PriorityQueue<T>` (бинарная куча с компаратором) в `backend/src/core/collections/priority-queue.ts`, реэкспорт коллекций в `backend/src/core/collections/index.ts`
 
 ### Ядро: Singleton-логгер (принцип V)
 
-- [ ] T022 [P] Тест: `getInstance()` всегда возвращает один и тот же объект, конструктор недоступен снаружи в `backend/src/core/patterns/singleton/app.logger.spec.ts`
-- [ ] T023 Реализовать `AppLogger` (приватный конструктор, `getInstance`, `log`/`warn`/`error` с контекстом) в `backend/src/core/patterns/singleton/app.logger.ts`
-- [ ] T024 Адаптер `NestLoggerAdapter implements LoggerService` поверх `AppLogger` в `backend/src/infrastructure/logger/nest-logger.adapter.ts`
+- [X] T022 [P] Тест: `getInstance()` всегда возвращает один и тот же объект, конструктор недоступен снаружи в `backend/src/core/patterns/singleton/app.logger.spec.ts`
+- [X] T023 Реализовать `AppLogger` (приватный конструктор, `getInstance`, `log`/`warn`/`error` с контекстом) в `backend/src/core/patterns/singleton/app.logger.ts`
+- [X] T024 Адаптер `NestLoggerAdapter implements LoggerService` поверх `AppLogger` в `backend/src/infrastructure/logger/nest-logger.adapter.ts`
 
 ### Инфраструктура бэкенда
 
-- [ ] T025 Prisma-схема со всеми моделями и enum'ами из `data-model.md` §1: `User` (`User.email` уникален), `RefreshSession` (каскадное удаление по `RefreshSession.userId`), `Project` (`Project.description` необязательно), `ProjectMember` (составной PK `ProjectMember.projectId`+`ProjectMember.userId`), `Task` (каскадное удаление по `Task.projectId`; `Task.authorId` обязательно; `Task.description` необязательно; индексы `(projectId, stage, rank)` и `(projectId, deadline)`; `Task.version` по умолчанию 0) в `backend/prisma/schema.prisma`; первая миграция в `backend/prisma/migrations/`
-- [ ] T026 `PrismaService` с `$connect` в `onModuleInit` и `$disconnect` в `onModuleDestroy` (принцип IV) и `PrismaModule` в `backend/src/infrastructure/prisma/prisma.service.ts`, `prisma.module.ts`
-- [ ] T027 [P] Загрузка и проверка конфигурации из `.env` (без секрета приложение не стартует) в `backend/src/config/app.config.ts`
-- [ ] T028 Глобальный `CustomExceptionFilter`: маппинг Unauthorized→401, NotFound→404, Validation→400, AccessDenied→403, Conflict→409, остальное→500 с записью исходной ошибки в `AppLogger`; тело `{code,message,value}` по contracts/rest-api.md; ошибки `class-validator` превращаются в `ValidationException` с кодом `VALIDATION` в `backend/src/common/filters/custom-exception.filter.ts`
-- [ ] T029 `main.ts` и `app.module.ts`: префикс `/api`, `cookie-parser`, CORS с credentials для `FRONTEND_ORIGIN`, глобальный `ValidationPipe` (whitelist), фильтр из T028, `app.useLogger(NestLoggerAdapter)`, `enableShutdownHooks()` в `backend/src/main.ts`, `backend/src/app.module.ts`
+- [X] T025 Prisma-схема со всеми моделями и enum'ами из `data-model.md` §1: `User` (`User.email` уникален), `RefreshSession` (каскадное удаление по `RefreshSession.userId`), `Project` (`Project.description` необязательно), `ProjectMember` (составной PK `ProjectMember.projectId`+`ProjectMember.userId`), `Task` (каскадное удаление по `Task.projectId`; `Task.authorId` обязательно; `Task.description` необязательно; индексы `(projectId, stage, rank)` и `(projectId, deadline)`; `Task.version` по умолчанию 0) в `backend/prisma/schema.prisma`; первая миграция в `backend/prisma/migrations/`
+- [X] T026 `PrismaService` с `$connect` в `onModuleInit` и `$disconnect` в `onModuleDestroy` (принцип IV) и `PrismaModule` в `backend/src/infrastructure/prisma/prisma.service.ts`, `prisma.module.ts`
+- [X] T027 [P] Загрузка и проверка конфигурации из `.env` (без секрета приложение не стартует) в `backend/src/config/app.config.ts`
+- [X] T028 Глобальный `CustomExceptionFilter`: маппинг Unauthorized→401, NotFound→404, Validation→400, AccessDenied→403, Conflict→409, остальное→500 с записью исходной ошибки в `AppLogger`; тело `{code,message,value}` по contracts/rest-api.md; ошибки `class-validator` превращаются в `ValidationException` с кодом `VALIDATION` в `backend/src/common/filters/custom-exception.filter.ts`
+- [X] T029 `main.ts` и `app.module.ts`: префикс `/api`, `cookie-parser`, CORS с credentials для `FRONTEND_ORIGIN`, глобальный `ValidationPipe` (whitelist), фильтр из T028, `app.useLogger(NestLoggerAdapter)`, `enableShutdownHooks()` в `backend/src/main.ts`, `backend/src/app.module.ts`
 
 ### Базовый фронтенд
 
-- [ ] T030 [P] Инициализировать shadcn/ui (button, input, label, dialog, select, card, badge, sonner, avatar, dropdown-menu) в `frontend/src/components/ui/`
-- [ ] T031 [P] API-клиент на `fetch` с `credentials: 'include'`: разбор `ApiError`, один повтор запроса через `/auth/refresh` при 401 в `frontend/src/lib/api-client.ts`
-- [ ] T032 [P] `QueryClient` и провайдеры (TanStack Query, Toaster) в `frontend/src/lib/query-client.ts` и `frontend/src/app/providers.tsx`; подключение в `frontend/src/app/layout.tsx` (язык `ru`)
+- [X] T030 [P] Инициализировать shadcn/ui (button, input, label, dialog, select, card, badge, sonner, avatar, dropdown-menu) в `frontend/src/components/ui/`
+- [X] T031 [P] API-клиент на `fetch` с `credentials: 'include'`: разбор `ApiError`, один повтор запроса через `/auth/refresh` при 401 в `frontend/src/lib/api-client.ts`
+- [X] T032 [P] `QueryClient` и провайдеры (TanStack Query, Toaster) в `frontend/src/lib/query-client.ts` и `frontend/src/app/providers.tsx`; подключение в `frontend/src/app/layout.tsx` (язык `ru`)
 
 **Checkpoint**: `npm run test:core -w backend` зелёный (исключения, коллекции, логгер),
 `docker compose up` поднимает пустое приложение.
