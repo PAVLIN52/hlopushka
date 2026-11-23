@@ -1,6 +1,8 @@
 # Вся инфраструктура «Хлопушки» поднимается одной командой: docker compose up --build
 # Инкремент 001: PostgreSQL + backend + frontend. Redis и MinIO появятся в инкрементах 2 и 5.
 
+name: hlopushka
+
 services:
   postgres:
     image: postgres:16

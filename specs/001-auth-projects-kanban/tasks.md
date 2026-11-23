@@ -359,7 +359,7 @@ Task: "ConnectionBanner в frontend/src/components/kanban/connection-banner.tsx"
 
 - [P] — разные файлы и нет зависимостей от незавершённых задач.
 - Метка истории [USn] связывает задачу с историей из spec.md.
-- Docker установлен; он нужен с T008 (проверка `docker compose up`). Задачи ядра
-  (T010–T023, тесты паттернов) от него не зависят.
+- Docker: движок Colima (`colima start`), стек поднимается `docker compose up --build`.
+  Задачи ядра (тесты паттернов) от него не зависят.
 - Strategy и Proxy в этом инкременте сознательно не реализуются (plan.md → Constitution
   Check, V).

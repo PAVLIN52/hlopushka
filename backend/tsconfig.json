@@ -9,7 +9,6 @@
     "strictPropertyInitialization": false,
     "baseUrl": "./",
     "outDir": "./dist",
-    "incremental": true,
     "paths": {
       "@/*": ["src/*"]
     },

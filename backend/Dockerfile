@@ -28,4 +28,4 @@ COPY --from=build /app/backend/prisma backend/prisma
 WORKDIR /app/backend
 EXPOSE 4000
 # Миграции применяются при старте контейнера, затем запускается сервер.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && exec node dist/main.js"]
