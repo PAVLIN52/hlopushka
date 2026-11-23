@@ -1,0 +1,29 @@
+# Зависимости и сборки
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Окружение и секреты
+.env
+.env.*
+!.env.example
+
+# Локальные настройки Claude Code
+.claude/settings.local.json
+
+# Данные контейнеров и медиа
+data/
+volumes/
+*.mp4
+*.mov
+*.mxf
+
+# Системное
+.DS_Store
+*.log
+.idea/
+.vscode/
