@@ -67,9 +67,9 @@ Project Structure).
 
 ### Ядро: исключения (принцип III)
 
-- [ ] T012 [P] Тест: свойства `message`/`value`/`code`, цепочка `instanceof` для 4 наследников, сохранение `name` и стека в `backend/src/core/exceptions/exceptions.spec.ts`
+- [ ] T012 [P] Тест: свойства `message`/`value`/`code`, цепочка `instanceof` для 5 наследников (включая `UnauthorizedException`), сохранение `name` и стека в `backend/src/core/exceptions/exceptions.spec.ts`
 - [ ] T013 Реализовать `CustomException extends Error` в `backend/src/core/exceptions/custom.exception.ts`
-- [ ] T014 [P] Реализовать наследников `NotFoundException`, `ValidationException`, `AccessDeniedException`, `ConflictException` в `backend/src/core/exceptions/not-found.exception.ts`, `validation.exception.ts`, `access-denied.exception.ts`, `conflict.exception.ts` и реэкспорт в `backend/src/core/exceptions/index.ts`
+- [ ] T014 [P] Реализовать наследников `NotFoundException`, `ValidationException`, `AccessDeniedException`, `ConflictException`, `UnauthorizedException` в `backend/src/core/exceptions/not-found.exception.ts`, `validation.exception.ts`, `access-denied.exception.ts`, `conflict.exception.ts`, `unauthorized.exception.ts` и реэкспорт в `backend/src/core/exceptions/index.ts`
 - [ ] T015 [P] Константы кодов ошибок из `data-model.md` §2.1 в `backend/src/core/exceptions/error-codes.ts`
 
 ### Ядро: коллекции и интерфейс итератора (принципы II, VI)
@@ -89,10 +89,10 @@ Project Structure).
 
 ### Инфраструктура бэкенда
 
-- [ ] T025 Prisma-схема со всеми моделями и enum'ами из `data-model.md` §1: `User` (`User.email` уникален), `RefreshSession`, `Project`, `ProjectMember` (составной PK `ProjectMember.projectId`+`ProjectMember.userId`), `Task` (индексы `(projectId, stage, rank)` и `(projectId, deadline)`, `Task.version` по умолчанию 0) в `backend/prisma/schema.prisma`; первая миграция в `backend/prisma/migrations/`
+- [ ] T025 Prisma-схема со всеми моделями и enum'ами из `data-model.md` §1: `User` (`User.email` уникален), `RefreshSession` (каскадное удаление по `RefreshSession.userId`), `Project` (`Project.description` необязательно), `ProjectMember` (составной PK `ProjectMember.projectId`+`ProjectMember.userId`), `Task` (каскадное удаление по `Task.projectId`; `Task.authorId` обязательно; `Task.description` необязательно; индексы `(projectId, stage, rank)` и `(projectId, deadline)`; `Task.version` по умолчанию 0) в `backend/prisma/schema.prisma`; первая миграция в `backend/prisma/migrations/`
 - [ ] T026 `PrismaService` с `$connect` в `onModuleInit` и `$disconnect` в `onModuleDestroy` (принцип IV) и `PrismaModule` в `backend/src/infrastructure/prisma/prisma.service.ts`, `prisma.module.ts`
 - [ ] T027 [P] Загрузка и проверка конфигурации из `.env` (без секрета приложение не стартует) в `backend/src/config/app.config.ts`
-- [ ] T028 Глобальный `CustomExceptionFilter`: маппинг 404/400/403/409/500 и тело `{code,message,value}` по contracts/rest-api.md; ошибки `class-validator` превращаются в `ValidationException` с кодом `VALIDATION` в `backend/src/common/filters/custom-exception.filter.ts`
+- [ ] T028 Глобальный `CustomExceptionFilter`: маппинг Unauthorized→401, NotFound→404, Validation→400, AccessDenied→403, Conflict→409, остальное→500 с записью исходной ошибки в `AppLogger`; тело `{code,message,value}` по contracts/rest-api.md; ошибки `class-validator` превращаются в `ValidationException` с кодом `VALIDATION` в `backend/src/common/filters/custom-exception.filter.ts`
 - [ ] T029 `main.ts` и `app.module.ts`: префикс `/api`, `cookie-parser`, CORS с credentials для `FRONTEND_ORIGIN`, глобальный `ValidationPipe` (whitelist), фильтр из T028, `app.useLogger(NestLoggerAdapter)`, `enableShutdownHooks()` в `backend/src/main.ts`, `backend/src/app.module.ts`
 
 ### Базовый фронтенд
@@ -121,7 +121,7 @@ Project Structure).
 - [ ] T037 [US1] `RefreshSessionsRepository` (хранит хеш токена `data-model.md` → `RefreshSession.tokenHash`, срок `RefreshSession.expiresAt`, отзыв `RefreshSession.revokedAt`) в `backend/src/modules/auth/auth.repository.ts`
 - [ ] T038 [US1] `AuthService`: регистрация (argon2id → `User.passwordHash`, `AUTH_EMAIL_TAKEN`), вход (`AUTH_INVALID_CREDENTIALS` без уточнения поля), выпуск access на 15 мин и refresh на 7 дней, ротация refresh, выход с отзывом сессии (research.md R2) в `backend/src/modules/auth/auth.service.ts`
 - [ ] T039 [US1] `AuthController`: `/auth/register`, `/login`, `/refresh`, `/logout`, `/me` по contracts/rest-api.md; httpOnly-cookie `SameSite=Lax`, `Secure` в production в `backend/src/modules/auth/auth.controller.ts`, `auth.module.ts`
-- [ ] T040 [US1] `JwtAuthGuard` (глобальный, с декоратором `@Public()`) и декоратор `@CurrentUser()` в `backend/src/common/guards/jwt-auth.guard.ts`, `backend/src/common/decorators/public.decorator.ts`, `current-user.decorator.ts`
+- [ ] T040 [US1] `JwtAuthGuard` (глобальный, с декоратором `@Public()`): при отсутствии, истечении или отзыве токена бросает только `UnauthorizedException` с кодом `AUTH_REQUIRED` (не исключение NestJS, принцип III); декоратор `@CurrentUser()` в `backend/src/common/guards/jwt-auth.guard.ts`, `backend/src/common/decorators/public.decorator.ts`, `current-user.decorator.ts`
 - [ ] T041 [P] [US1] Хуки `useSession`, `useLogin`, `useRegister`, `useLogout` в `frontend/src/features/auth/use-session.ts` и `frontend/src/features/auth/api.ts`
 - [ ] T042 [P] [US1] Страницы входа и регистрации: валидация полей, сообщения ошибок на русском в `frontend/src/app/(auth)/login/page.tsx`, `frontend/src/app/(auth)/register/page.tsx`
 - [ ] T043 [US1] Защита маршрутов: без сессии — переход на `/login`, после входа — на `/projects`, кнопка «Выйти» в шапке в `frontend/src/middleware.ts` и `frontend/src/components/projects/app-header.tsx`
@@ -143,7 +143,7 @@ Project Structure).
 
 - [ ] T044 [P] [US2] Контракты `CreateProjectDto`, `ProjectDto`, `MemberDto`, `AddMemberDto`, `UpdateMemberRoleDto` в `shared/src/contracts/projects.ts`
 - [ ] T045 [P] [US2] Доменные классы `Project` и `ProjectMember` (`data-model.md` → `Project.title`, `Project.dueDate`, `ProjectMember.role`) в `backend/src/modules/projects/entities/project.entity.ts`, `project-member.entity.ts`
-- [ ] T046 [P] [US2] DTO проекта и участника с валидацией (`data-model.md` → `Project.title`, `ProjectMember.role`) в `backend/src/modules/projects/dto/create-project.dto.ts`, `update-project.dto.ts`, `add-member.dto.ts`, `update-member-role.dto.ts`
+- [ ] T046 [P] [US2] DTO проекта и участника с валидацией (`data-model.md` → `Project.title`, `Project.description`, `Project.dueDate`, `ProjectMember.role`) в `backend/src/modules/projects/dto/create-project.dto.ts`, `update-project.dto.ts`, `add-member.dto.ts`, `update-member-role.dto.ts`
 - [ ] T047 [US2] `ProjectsRepository implements IRepository<Project>` + методы участников (`findMember`, `countProducers`, `addMember`, `updateRole`, `removeMember` со сбросом `Task.assigneeId` в null в той же транзакции) в `backend/src/modules/projects/projects.repository.ts`
 - [ ] T048 [US2] Декоратор `@ProjectRoles(...)` и `ProjectRoleGuard`: проверка участия (`PROJECT_NOT_FOUND`, `PROJECT_ACCESS_DENIED`) и роли (`ROLE_FORBIDDEN`) по матрице FR-011; роль кладётся в `request.membership` в `backend/src/common/guards/project-role.guard.ts`, `backend/src/common/decorators/roles.decorator.ts`
 - [ ] T049 [US2] `ProjectsService`: создание проекта (создатель получает роль PRODUCER), список только своих проектов, добавление участника по email (`USER_NOT_FOUND`, `MEMBER_ALREADY_EXISTS`), смена роли и удаление с проверкой `LAST_PRODUCER` в транзакции в `backend/src/modules/projects/projects.service.ts`
@@ -167,18 +167,18 @@ Project Structure).
 
 ### Тесты ядра для User Story 3 (обязательны по принципу I) ⚠️
 
-- [ ] T054 [P] [US3] Тест Factory Method: каждый создатель возвращает нужный подкласс `Task` и этап по умолчанию из таблицы `data-model.md` §2.4; явно переданный этап важнее значения по умолчанию; неизвестный тип → `ValidationException` в `backend/src/core/patterns/factory/task-creator.spec.ts`
+- [ ] T054 [P] [US3] Тест абстрактного Factory Method в ядре на фейковом создателе (без импортов из модулей): шаблонный `create()` подставляет `defaultStage()`, если этап не передан, и сохраняет явно переданный; `TaskCreatorRegistry` возвращает зарегистрированного создателя, а для неизвестного типа бросает `ValidationException` в `backend/src/core/patterns/factory/task-creator.spec.ts`
 - [ ] T055 [P] [US3] Тест `DeadlineIterator`: порядок от самой просроченной, задачи без дедлайна и в этапе DELIVERY пропускаются, `ITERATOR_EMPTY`, `ITERATOR_EXHAUSTED`, работа `for...of` в `backend/src/core/iterators/deadline.iterator.spec.ts`
 
 ### Implementation for User Story 3
 
 - [ ] T056 [P] [US3] Контракты `TaskDto`, `CreateTaskDto`, `UpdateTaskDto`, `BoardDto` в `shared/src/contracts/tasks.ts`
-- [ ] T057 [US3] Абстрактный доменный `Task` с `isOverdue(now)` (производное поле из `data-model.md` → `Task.deadline`, `Task.stage`) и 6 наследников в `backend/src/modules/tasks/entities/task.entity.ts`, `shooting-task.entity.ts`, `editing-task.entity.ts`, `color-task.entity.ts`, `sound-task.entity.ts`, `graphics-task.entity.ts`, `other-task.entity.ts`. Ядро зависит только от интерфейса `ITaskLike` (`backend/src/core/iterators/task-like.interface.ts`), а не от модуля
-- [ ] T058 [US3] Factory Method: абстрактный `TaskCreator`, 6 создателей и `TaskCreatorRegistry` (research.md R7) в `backend/src/core/patterns/factory/task.creator.ts`, `shooting-task.creator.ts`, `editing-task.creator.ts`, `color-task.creator.ts`, `sound-task.creator.ts`, `graphics-task.creator.ts`, `other-task.creator.ts`, `task-creator.registry.ts`, `index.ts`
+- [ ] T057 [US3] Ядро Factory Method: интерфейс `ITaskLike` в `backend/src/core/iterators/task-like.interface.ts`; абстрактный `TaskCreator<T extends ITaskLike>` (шаблонный `create()`, абстрактные `createTask()` и `defaultStage()`) и `TaskCreatorRegistry<T>` (research.md R7, `data-model.md` §2.3) в `backend/src/core/patterns/factory/task.creator.ts`, `task-creator.registry.ts`, `index.ts`
+- [ ] T058 [US3] Доменные классы и конкретные создатели в модуле: абстрактный `Task implements ITaskLike` с `isOverdue(now)` (производное поле из `data-model.md` → `Task.deadline`, `Task.stage`), 6 наследников и 6 `*TaskCreator extends TaskCreator<Task>` с этапами по умолчанию из `data-model.md` §2.4; тест создателей в `backend/src/modules/tasks/entities/task-creators.spec.ts`; файлы `backend/src/modules/tasks/entities/task.entity.ts`, `shooting-task.entity.ts` … `other-task.entity.ts`, `shooting-task.creator.ts` … `other-task.creator.ts`
 - [ ] T059 [US3] `DeadlineIterator implements IIterator<ITaskLike>` поверх `PriorityQueue` в `backend/src/core/iterators/deadline.iterator.ts`; реэкспорт в `backend/src/core/iterators/index.ts`
-- [ ] T060 [P] [US3] DTO задач с валидацией (`data-model.md` → `Task.title`, `Task.type`, `Task.stage`, `Task.priority`, `Task.deadline`, `Task.assigneeId`; в `UpdateTaskDto` обязателен `expectedVersion` → `Task.version`; `stage` в `UpdateTaskDto` запрещён) в `backend/src/modules/tasks/dto/create-task.dto.ts`, `update-task.dto.ts`
+- [ ] T060 [P] [US3] DTO задач с валидацией (`data-model.md` → `Task.title`, `Task.description`, `Task.type`, `Task.stage`, `Task.priority`, `Task.deadline`, `Task.assigneeId`; в `UpdateTaskDto` обязателен `expectedVersion` → `Task.version`; `stage` в `UpdateTaskDto` запрещён) в `backend/src/modules/tasks/dto/create-task.dto.ts`, `update-task.dto.ts`
 - [ ] T061 [US3] `TasksRepository implements IRepository<Task>`: сопоставление строки БД и подкласса, `findByProjectOrdered` (`stage`, `rank`), `updateWithVersion` (условие `version = expected`, иначе `TASK_VERSION_CONFLICT`; `Task.version` +1), вычисление `Task.rank` между соседями через `fractional-indexing` в `backend/src/modules/tasks/tasks.repository.ts`
-- [ ] T062 [US3] `TasksService`: создание через `TaskCreatorRegistry` (`ASSIGNEE_NOT_MEMBER` по `data-model.md` → `Task.assigneeId`; предупреждение `DEADLINE_AFTER_PROJECT_DUE`, если `Task.deadline` позже `Project.dueDate`), редактирование с `expectedVersion`, удаление в `backend/src/modules/tasks/tasks.service.ts`
+- [ ] T062 [US3] `TasksService`: создание через `TaskCreatorRegistry` с регистрацией 6 создателей в `onModuleInit` (`data-model.md` → `Task.authorId` = текущий пользователь; `ASSIGNEE_NOT_MEMBER` по `Task.assigneeId`; предупреждение `DEADLINE_AFTER_PROJECT_DUE`, если `Task.deadline` позже `Project.dueDate`), редактирование с `expectedVersion`, удаление в `backend/src/modules/tasks/tasks.service.ts`
 - [ ] T063 [US3] `TasksController`: POST/PATCH/DELETE задач по contracts/rest-api.md; удаление только для `@ProjectRoles(PRODUCER)`, изменения — для PRODUCER/EDITOR/COLORIST в `backend/src/modules/tasks/tasks.controller.ts`, `tasks.module.ts`
 - [ ] T064 [US3] `BoardsService.getBoard`: 6 колонок в порядке `STAGE_ORDER`, задачи по `rank`, `overdue` из `DeadlineIterator`, поле `history` (пока `{canUndo:false, canRedo:false}`) и `BoardsController` `GET /projects/:id/board` в `backend/src/modules/boards/boards.service.ts`, `boards.controller.ts`, `boards.module.ts`
 - [ ] T065 [P] [US3] Хуки `useBoard`, `useCreateTask`, `useUpdateTask`, `useDeleteTask` с инвалидацией кеша в `frontend/src/features/board/api.ts`, `use-board.ts`
@@ -239,13 +239,13 @@ FR-021…023).
 
 ### Тесты ядра для User Story 5 (обязательны по принципу I) ⚠️
 
-- [ ] T085 [P] [US5] Тест `CommandHistory`: push/undo/redo, сброс повторов после новой команды, лимит 50 (самая старая вытесняется), `NOTHING_TO_UNDO`/`NOTHING_TO_REDO`, при ошибке `undo()` команда удаляется из истории в `backend/src/core/patterns/command/command-history.spec.ts`
+- [ ] T085 [P] [US5] Тест `CommandHistory`: push/undo/redo, сброс повторов после новой команды, лимит 50 (самая старая вытесняется), `NOTHING_TO_UNDO`/`NOTHING_TO_REDO`, при ошибке `undo()` команда удаляется из истории, сценарий SC-006 «10 команд → 10 отмен → исходное состояние» в `backend/src/core/patterns/command/command-history.spec.ts`
 - [ ] T086 [P] [US5] Тест `MoveTaskCommand` с фейковым исполнителем: `undo` возвращает исходные этап и rank и передаёт `versionAfter` как `expectedVersion`; конфликт превращается в `ConflictException` в `backend/src/core/patterns/command/move-task.command.spec.ts`
 
 ### Implementation for User Story 5
 
 - [ ] T087 [US5] `ICommand`, `MoveTaskCommand` (зависит от интерфейса `ITaskMover`, а не от сервиса) и `CommandHistory` поверх `LinkedList<ICommand>` (research.md R5) в `backend/src/core/patterns/command/command.interface.ts`, `move-task.command.ts`, `command-history.ts`, `index.ts`
-- [ ] T088 [US5] Хранилище историй в `BoardsService`: `Map<userId:projectId, CommandHistory>`, очистка неактивных через 2 ч по таймеру, остановка таймера в `onModuleDestroy`. Методы `undo`/`redo`/`historyState` в `backend/src/modules/boards/boards.service.ts`
+- [ ] T088 [US5] Хранилище историй в `BoardsService`: `Map<userId:projectId, CommandHistory>` (общая для вкладок пользователя, переживает обновление страницы — FR-019), очистка неактивных через 2 ч по таймеру; явный `dispose()` останавливает таймер и вызывается из `onModuleDestroy` (принцип IV). Методы `undo`/`redo`/`historyState` в `backend/src/modules/boards/boards.service.ts`
 - [ ] T089 [US5] Перенести выполнение перемещения в `MoveTaskCommand` через `BoardsService` (`TasksService` реализует `ITaskMover`); ответ `move` содержит `history`; эндпоинты `POST /projects/:id/board/undo` и `/redo` для PRODUCER/EDITOR/COLORIST в `backend/src/modules/boards/boards.controller.ts`, `backend/src/modules/tasks/tasks.service.ts`
 - [ ] T090 [US5] Хук `useUndoRedo`: кнопки и сочетания Cmd/Ctrl+Z и Cmd/Ctrl+Shift+Z, неактивность по `history`, toast при отказе с перечитыванием доски в `frontend/src/features/board/use-undo-redo.ts`
 - [ ] T091 [US5] Кнопки «Отменить» и «Повторить» в панели доски в `frontend/src/components/kanban/board-toolbar.tsx` и `frontend/src/app/projects/[id]/board/page.tsx`
@@ -282,11 +282,11 @@ FR-021…023).
 
 - [ ] T095 [P] e2e-тесты бэкенда для auth, projects и members (регистрация, `AUTH_EMAIL_TAKEN`, `LAST_PRODUCER`, `USER_NOT_FOUND`, доступ не участника) в `backend/test/auth.e2e-spec.ts`, `backend/test/projects.e2e-spec.ts`
 - [ ] T096 [P] e2e-тест бэкенда: матрица переходов через API, конфликт версий, undo после чужого изменения в `backend/test/board.e2e-spec.ts`
-- [ ] T097 [P] Seed-данные (Аня, Боря, Вика, проект «Клип», 10 задач в разных этапах) для демонстрации в `backend/prisma/seed.ts`
+- [ ] T097 [P] Seed-данные (Аня, Боря, Вика, проект «Клип», 10 задач в разных этапах) для демонстрации; флаг `--big` дополнительно создаёт проект с 200 задачами для замера SC-003 в `backend/prisma/seed.ts`
 - [ ] T098 [P] Playwright: сценарии 7 (синхронизация в двух контекстах, < 2 с), 8, 10 и 12 из quickstart.md с сохранением скриншотов в `docs/screenshots/001/` в `frontend/e2e/board.spec.ts` и `frontend/playwright.config.ts`
 - [ ] T099 [P] Перенести UML из `data-model.md` §2 и диаграмму последовательности из plan.md в отдельные файлы для отчёта в `docs/uml/core-classes.md` и `docs/sequence/move-task.md`
-- [ ] T100 [P] Замер SC-003: доска с 200 задачами (seed-флаг `--big`) открывается меньше чем за 2 с; результат записать в `docs/report/001-performance.md`
-- [ ] T101 Проверить, что во всех публичных классах `backend/src/core/**` есть JSDoc на русском и комментарий с названием паттерна, а в ядре нет `any` и импортов `@nestjs`/`@prisma` (правило ESLint `no-restricted-imports` для `backend/src/core/**` в `eslint.config.mjs`)
+- [ ] T100 [P] Замеры: SC-003 — доска с 200 задачами (seed `--big`) открывается меньше чем за 2 с; SC-002 — 20 перемещений подряд, p95 подтверждения сервера меньше 1 с (замер в Playwright по времени ответа `/move`); результаты в `docs/report/001-performance.md`
+- [ ] T101 Проверить, что во всех публичных классах `backend/src/core/**` есть JSDoc на русском и комментарий с названием паттерна, а в ядре нет `any`. Правило ESLint `no-restricted-imports` для `backend/src/core/**` запрещает `@nestjs/*`, `@prisma/*`, `socket.io` и `@/modules/*`, `@/infrastructure/*` в `eslint.config.mjs`
 - [ ] T102 Пройти все 16 сценариев quickstart.md вручную и отметить результат в `docs/report/001-quickstart-results.md`
 
 ---
@@ -306,7 +306,7 @@ FR-021…023).
 ### Within Each User Story
 
 - Тест ядра → класс ядра → репозиторий → сервис → контроллер → хуки фронтенда → UI.
-- Тест ядра (T012, T018, T020, T022, T054, T055, T069–T071, T085, T086) должен **падать**
+- Тест ядра (T012, T018, T020, T022, T054, T055, T058 (тест создателей), T069–T071, T085, T086) должен **падать**
   до реализации соответствующего класса.
 
 ### Parallel Opportunities
@@ -359,7 +359,7 @@ Task: "ConnectionBanner в frontend/src/components/kanban/connection-banner.tsx"
 
 - [P] — разные файлы и нет зависимостей от незавершённых задач.
 - Метка истории [USn] связывает задачу с историей из spec.md.
-- Docker нужен с T008 (проверка `docker compose up`). Задачи ядра (T010–T023, тесты
-  паттернов) можно выполнять без него.
+- Docker установлен; он нужен с T008 (проверка `docker compose up`). Задачи ядра
+  (T010–T023, тесты паттернов) от него не зависят.
 - Strategy и Proxy в этом инкременте сознательно не реализуются (plan.md → Constitution
   Check, V).

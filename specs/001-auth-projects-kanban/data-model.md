@@ -154,22 +154,25 @@ classDiagram
     class ValidationException
     class AccessDeniedException
     class ConflictException
+    class UnauthorizedException
     Error <|-- CustomException
     CustomException <|-- NotFoundException
     CustomException <|-- ValidationException
     CustomException <|-- AccessDeniedException
     CustomException <|-- ConflictException
+    CustomException <|-- UnauthorizedException
 ```
 
 Глобальный фильтр `common/filters/custom-exception.filter.ts` переводит исключения в HTTP:
 
 | Исключение | HTTP-статус |
 |---|---|
+| Unauthorized | 401 |
 | NotFound | 404 |
 | Validation | 400 |
 | AccessDenied | 403 |
 | Conflict | 409 |
-| прочие | 500 |
+| прочие (в том числе исключения NestJS и Prisma) | 500, а исходная ошибка пишется в `AppLogger` |
 
 Тело ответа: `{ code, message, value }`. Подробнее — в [contracts/rest-api.md](contracts/rest-api.md).
 
@@ -177,6 +180,7 @@ classDiagram
 
 | Код | Исключение | Когда |
 |---|---|---|
+| `AUTH_REQUIRED` | Unauthorized | нет действующей сессии (нет cookie, токен истёк или отозван) |
 | `AUTH_INVALID_CREDENTIALS` | AccessDenied | неверный email или пароль |
 | `AUTH_EMAIL_TAKEN` | Validation | email уже зарегистрирован |
 | `AUTH_WEAK_PASSWORD` | Validation | пароль не прошёл проверку FR-003 |
@@ -300,12 +304,27 @@ classDiagram
     ICommand <|.. MoveTaskCommand
     CommandHistory o-- ICommand
 
-    %% Factory Method
-    class TaskCreator {
-      <<abstract>>
-      +createTask(data) Task
-      #defaultStage() Stage
+    %% Factory Method (core: абстракция; modules/tasks/entities: конкретные создатели)
+    class ITaskLike {
+      <<interface>>
+      +id
+      +type: TaskType
+      +stage: Stage
+      +deadline: Date | null
     }
+    class TaskCreator~T extends ITaskLike~ {
+      <<abstract>>
+      +create(data) T
+      #createTask(data)* T
+      #defaultStage()* Stage
+    }
+    class TaskCreatorRegistry~T~ {
+      -creators: Map~TaskType, TaskCreator~T~~
+      +register(type, creator)
+      +get(type) TaskCreator~T~
+    }
+    TaskCreatorRegistry o-- TaskCreator
+    TaskCreator ..> ITaskLike : creates
     class ShootingTaskCreator
     class EditingTaskCreator
     class ColorTaskCreator
@@ -344,14 +363,24 @@ classDiagram
     }
 ```
 
+**Где что лежит (принципы I и VIII):**
+- в `core/patterns/factory` — только абстрактный `TaskCreator<T>` и `TaskCreatorRegistry<T>`.
+  Шаблонный метод `create()` подставляет этап по умолчанию и вызывает фабричный метод
+  `createTask()`, а реестр при неизвестном типе бросает `ValidationException`;
+- в `modules/tasks/entities` — 6 конкретных создателей (`shooting-task.creator.ts` и
+  т.д.) и классы задач, которые они создают. Ядро о них не знает: зависимость
+  направлена только из модуля в ядро.
+
 `SocketBoardObserver` и `AuditLogObserver` реализуют `IObserver<BoardEvent>`. Они лежат
 в `infrastructure/`, потому что зависят от Socket.IO и логгера.
 
 ### 2.4 Доменные классы задач — `modules/tasks/entities`
 
-Абстрактный `Task` (поля из хранимой модели + `isOverdue()`) и наследники
-`ShootingTask`, `EditingTask`, `ColorTask`, `SoundTask`, `GraphicsTask`, `OtherTask`.
-Их создают только фабрики из 2.3. Значения этапа по умолчанию:
+Абстрактный `Task implements ITaskLike` (поля из хранимой модели + `isOverdue()`) и
+наследники `ShootingTask`, `EditingTask`, `ColorTask`, `SoundTask`, `GraphicsTask`,
+`OtherTask`. Их создают только конкретные создатели `ShootingTaskCreator` …
+`OtherTaskCreator extends TaskCreator<Task>`, которые лежат здесь же, а регистрируются в
+`TaskCreatorRegistry` из ядра. Значения этапа по умолчанию:
 
 | Создатель | Этап по умолчанию |
 |---|---|

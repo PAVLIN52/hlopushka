@@ -60,16 +60,18 @@ Command, Factory Method, Observer и Singleton. Детали решений — 
 
 | # | Принцип | Как выполняется | До | После |
 |---|---|---|---|---|
-| I | Выделенное ООП-ядро | Всё из ООП-части лежит в `backend/src/core`. Socket.IO и логгер-адаптер — в `infrastructure`. Ядро не импортирует NestJS и Prisma. Юнит-тесты ядра запускаются без БД | ✅ | ✅ |
+| I | Выделенное ООП-ядро | Всё из ООП-части лежит в `backend/src/core`. Socket.IO и логгер-адаптер — в `infrastructure`. Ядро не импортирует NestJS, Prisma и `modules`: абстрактная фабрика `TaskCreator<T extends ITaskLike>` в ядре, конкретные создатели и классы задач — в `modules/tasks/entities`; итераторы и команды работают через интерфейсы `ITaskLike` и `ITaskMover`. Юнит-тесты ядра запускаются без БД. ESLint запрещает импорты `@nestjs`, `@prisma` и `@/modules` в `core/**` | ✅ | ✅ (исправлено после /speckit-analyze) |
 | II | Дженерики | `IRepository<T>` реализуют три репозитория. `LinkedList<T>` хранит историю команд. `PriorityQueue<T>` используется в `DeadlineIterator` для списка просроченных задач | ✅ | ✅ |
-| III | Единая модель исключений | Иерархия `CustomException` + глобальный фильтр. Добавлен `ConflictException` (409) — это расширение иерархии, а не отступление от неё (R4) | ✅ | ✅ |
-| IV | Освобождение ресурсов | `PrismaService.onModuleDestroy` → `$disconnect`. Gateway закрывает сокеты в `onApplicationShutdown`. Очистка устаревших историй команд останавливается в `onModuleDestroy` | ✅ | ✅ |
+| III | Единая модель исключений | Иерархия `CustomException` + глобальный фильтр. Добавлены `ConflictException` (409) и `UnauthorizedException` (401, `AUTH_REQUIRED`) — это расширение иерархии, а не отступление от неё. `JwtAuthGuard` бросает только `UnauthorizedException` | ✅ | ✅ |
+| IV | Освобождение ресурсов | `PrismaService.onModuleDestroy` → `$disconnect`. Gateway закрывает сокеты в `onApplicationShutdown`. `BoardsService.dispose()` останавливает таймер очистки историй и вызывается из `onModuleDestroy` | ✅ | ✅ |
 | V | Паттерны по назначению | State — этапы; Command — undo/redo; Factory Method — типы задач; Observer — синхронизация доски; Singleton — логгер. Strategy и Proxy относятся к видео (инкременты 2 и 5) и здесь сознательно не появляются | ✅ | ✅ |
 | VI | Итераторы | `IIterator<T>` + `StageIterator` (вперёд и назад) + `DeadlineIterator`. Коды `ITERATOR_EMPTY` и `ITERATOR_EXHAUSTED` | ✅ | ✅ |
 | VII | Документируемость | UML классов и ER-диаграмма — в [data-model.md](data-model.md). Диаграмма последовательности — ниже. JSDoc на русском — обязательная часть задач в tasks.md | ✅ | ✅ |
-| VIII | Структура файлов | Дерево ниже повторяет принцип VIII один в один. Модули имеют стандартный состав | ✅ | ✅ |
+| VIII | Структура файлов | Дерево ниже соответствует принципу VIII (v1.2.1): ни в одном модуле нет файлов сверх стандартного набора. У `users` нет контроллера и dto, у `boards` — репозитория, dto и entities: эти модули им не нужны, конституция это допускает | ✅ | ✅ |
 
-**Итог:** нарушений нет, раздел Complexity Tracking не нужен.
+**Итог:** нарушений нет, раздел Complexity Tracking не нужен. Первая версия плана нарушала
+принципы I и VIII (фабрика в ядре зависела от модуля, состав модулей не совпадал); это
+исправлено по итогам `/speckit-analyze` вместе с патчем конституции до v1.2.1.
 
 ### Диаграмма последовательности: перемещение карточки (принцип VII)
 
@@ -154,13 +156,13 @@ specs/001-auth-projects-kanban/
 │   ├── prisma/                   # schema.prisma, migrations/, seed.ts
 │   ├── src/
 │   │   ├── core/
-│   │   │   ├── exceptions/       # custom, not-found, validation, access-denied, conflict + index.ts
+│   │   │   ├── exceptions/       # custom, not-found, validation, access-denied, conflict, unauthorized + error-codes + index.ts
 │   │   │   ├── collections/      # repository.interface.ts, linked-list.ts, priority-queue.ts + index.ts
 │   │   │   ├── iterators/        # iterator.interface.ts, stage.iterator.ts, deadline.iterator.ts + index.ts
 │   │   │   └── patterns/
 │   │   │       ├── state/        # stage.state.ts, preproduction.state.ts … delivery.state.ts, task-stage.context.ts
 │   │   │       ├── command/      # command.interface.ts, move-task.command.ts, command-history.ts
-│   │   │       ├── factory/      # task.creator.ts, shooting-task.creator.ts …, task-creator.registry.ts
+│   │   │       ├── factory/      # task.creator.ts (абстрактный), task-creator.registry.ts
 │   │   │       ├── observer/     # subject.interface.ts, observer.interface.ts, board-event-bus.ts
 │   │   │       └── singleton/    # app.logger.ts
 │   │   ├── infrastructure/
@@ -176,7 +178,7 @@ specs/001-auth-projects-kanban/
 │   │   │   ├── users/            # module, service, repository, entities/
 │   │   │   ├── projects/         # module, controller, service, repository, dto/, entities/ (включая members)
 │   │   │   ├── boards/           # module, controller (board, undo, redo), service (история команд)
-│   │   │   └── tasks/            # module, controller, service, repository, dto/, entities/ (Task + 6 наследников)
+│   │   │   └── tasks/            # module, controller, service, repository, dto/, entities/ (Task + 6 наследников + 6 конкретных *.creator.ts)
 │   │   ├── config/
 │   │   ├── app.module.ts
 │   │   └── main.ts

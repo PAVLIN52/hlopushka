@@ -13,7 +13,7 @@
 | HTTP | Исключение |
 |---|---|
 | 400 | ValidationException |
-| 401 | нет действующей сессии |
+| 401 | UnauthorizedException (`AUTH_REQUIRED`) — нет действующей сессии |
 | 403 | AccessDeniedException |
 | 404 | NotFoundException |
 | 409 | ConflictException |
