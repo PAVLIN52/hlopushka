@@ -26,63 +26,12 @@
 | Real-time | Socket.IO |
 | Язык | TypeScript (strict) |
 | Тесты | Jest, Vitest, Playwright |
-| Инфраструктура | Docker Compose |
-
-## Быстрый старт
-
-Нужны **Node.js 24+** и **Docker**. На macOS вместо Docker Desktop подойдёт
-[Colima](https://github.com/abiosoft/colima):
-
-```bash
-brew install colima docker docker-compose docker-buildx
-colima start --cpu 2 --memory 3
-```
-
-Запуск:
-
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
-| Сервис | Адрес |
-|---|---|
-| Веб-приложение | http://localhost:3000 |
-| API | http://localhost:4000/api |
-
-Остановка: `docker compose stop`.
-
-## Разработка
-
-В Docker запускается только PostgreSQL, бэкенд и фронтенд работают локально с
-горячей перезагрузкой:
-
-```bash
-npm install
-cp .env.example .env
-docker compose up -d postgres
-npm run build:shared
-npm run prisma:deploy -w backend
-npm run seed -w backend     # демо-пользователи
-npm run dev -w backend      # http://localhost:4000/api
-npm run dev -w frontend     # http://localhost:3000
-```
-
-Учётные данные демо-пользователей лежат в [`backend/prisma/seed.ts`](backend/prisma/seed.ts).
-
-### Проверки
-
-```bash
-npm run test:core -w backend   # юнит-тесты доменного ядра
-npm run lint                   # ESLint: backend и shared
-npm run lint -w frontend       # ESLint: frontend
-```
 
 ## Архитектура
 
 ```text
 ├── backend/                 NestJS API
-│   ├── prisma/              схема БД, миграции, демо-данные
+│   ├── prisma/              схема БД и миграции
 │   └── src/
 │       ├── core/            доменное ядро без зависимостей от фреймворков
 │       ├── infrastructure/  Prisma, Socket.IO, логирование
@@ -97,11 +46,11 @@ npm run lint -w frontend       # ESLint: frontend
 зависит от NestJS, Prisma или транспорта. Это ограничение проверяет ESLint.
 
 - **Ошибки.** `CustomException` с кодом и значением и его наследники (`NotFound`,
-  `Validation`, `AccessDenied`, `Conflict`, `Unauthorized`). Глобальный фильтр переводит их в
-  ответы `{ code, message, value }`.
+  `Validation`, `AccessDenied`, `Conflict`, `Unauthorized`). Глобальный фильтр превращает их
+  в ответы вида `{ code, message, value }`.
 - **Коллекции и итераторы.** Обобщённые `LinkedList<T>` и `PriorityQueue<T>`, интерфейсы
   `IIterator<T>` и `IRepository<T>`.
-- **Паттерны:**
+- **Паттерны.**
   - State — правила переходов между этапами;
   - Command — история отмены и повтора;
   - Observer — рассылка изменений доски;
@@ -113,10 +62,4 @@ npm run lint -w frontend       # ESLint: frontend
 refresh-токен предъявят повторно, все сессии пользователя отзываются.
 
 Подробные спецификации, модель данных с UML-диаграммами и контракты REST и WebSocket лежат в
-[`specs/`](specs). Правила структуры кода и именования — в
-[`.specify/memory/constitution.md`](.specify/memory/constitution.md).
-
-## Работа с репозиторием
-
-- Каждая фича разрабатывается в отдельной ветке и попадает в `main` через pull request.
-- Сообщения коммитов — короткие фразы на английском в повелительном наклонении.
+[`specs/`](specs).
