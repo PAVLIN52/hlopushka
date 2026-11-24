@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+import { existsSync } from 'node:fs';
+
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
@@ -14,6 +16,8 @@ import { AppModule } from './app.module';
 
 /** Точка входа бэкенда «Хлопушки». */
 async function bootstrap(): Promise<void> {
+  // В режиме разработки подхватываем корневой .env (в Docker переменные задаёт compose).
+  if (process.env.NODE_ENV !== 'production' && existsSync('../.env')) process.loadEnvFile('../.env');
   const config = loadConfig();
   const app = await NestFactory.create(AppModule, { logger: new NestLoggerAdapter() });
 

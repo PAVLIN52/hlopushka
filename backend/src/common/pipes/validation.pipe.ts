@@ -8,11 +8,19 @@ export interface FieldError {
   messages: string[];
 }
 
+/** Встроенные сообщения class-validator на английском — переводим те, что видит пользователь. */
+function translate(rule: string, text: string, field: string): string {
+  if (rule === 'whitelistValidation') return `Лишнее поле «${field}»`;
+  return text;
+}
+
 /** Разворачивает вложенные ошибки class-validator в плоский список полей. */
 function flatten(errors: ValidationError[], parent = ''): FieldError[] {
   return errors.flatMap((error) => {
     const field = parent ? `${parent}.${error.property}` : error.property;
-    const own = error.constraints ? [{ field, messages: Object.values(error.constraints) }] : [];
+    const own = error.constraints
+      ? [{ field, messages: Object.entries(error.constraints).map(([rule, text]) => translate(rule, text, field)) }]
+      : [];
     return [...own, ...flatten(error.children ?? [], field)];
   });
 }

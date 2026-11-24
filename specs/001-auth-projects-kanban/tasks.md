@@ -114,17 +114,17 @@ Project Structure).
 
 ### Implementation for User Story 1
 
-- [ ] T033 [P] [US1] Контракты `RegisterDto`, `LoginDto`, `UserDto` в `shared/src/contracts/auth.ts`
-- [ ] T034 [P] [US1] Доменный класс `User` без поля пароля наружу (`data-model.md` → `User.name`, `User.email`, `User.passwordHash`) в `backend/src/modules/users/entities/user.entity.ts`
-- [ ] T035 [US1] `UsersRepository implements IRepository<User>`: `findByEmail` (`User.email` сравнивается в нижнем регистре) в `backend/src/modules/users/users.repository.ts`; `UsersService` и `UsersModule` в `backend/src/modules/users/users.service.ts`, `users.module.ts`
-- [ ] T036 [P] [US1] DTO с `class-validator`: имя по `data-model.md` → `User.name`, email по `User.email`; правило пароля из FR-003 (≥ 8 символов, есть буква и цифра) → `AUTH_WEAK_PASSWORD` в `backend/src/modules/auth/dto/register.dto.ts`, `login.dto.ts`
-- [ ] T037 [US1] `RefreshSessionsRepository` (хранит хеш токена `data-model.md` → `RefreshSession.tokenHash`, срок `RefreshSession.expiresAt`, отзыв `RefreshSession.revokedAt`) в `backend/src/modules/auth/auth.repository.ts`
-- [ ] T038 [US1] `AuthService`: регистрация (argon2id → `User.passwordHash`, `AUTH_EMAIL_TAKEN`), вход (`AUTH_INVALID_CREDENTIALS` без уточнения поля), выпуск access на 15 мин и refresh на 7 дней, ротация refresh, выход с отзывом сессии (research.md R2) в `backend/src/modules/auth/auth.service.ts`
-- [ ] T039 [US1] `AuthController`: `/auth/register`, `/login`, `/refresh`, `/logout`, `/me` по contracts/rest-api.md; httpOnly-cookie `SameSite=Lax`, `Secure` в production в `backend/src/modules/auth/auth.controller.ts`, `auth.module.ts`
-- [ ] T040 [US1] `JwtAuthGuard` (глобальный, с декоратором `@Public()`): при отсутствии, истечении или отзыве токена бросает только `UnauthorizedException` с кодом `AUTH_REQUIRED` (не исключение NestJS, принцип III); декоратор `@CurrentUser()` в `backend/src/common/guards/jwt-auth.guard.ts`, `backend/src/common/decorators/public.decorator.ts`, `current-user.decorator.ts`
-- [ ] T041 [P] [US1] Хуки `useSession`, `useLogin`, `useRegister`, `useLogout` в `frontend/src/features/auth/use-session.ts` и `frontend/src/features/auth/api.ts`
-- [ ] T042 [P] [US1] Страницы входа и регистрации: валидация полей, сообщения ошибок на русском в `frontend/src/app/(auth)/login/page.tsx`, `frontend/src/app/(auth)/register/page.tsx`
-- [ ] T043 [US1] Защита маршрутов: без сессии — переход на `/login`, после входа — на `/projects`, кнопка «Выйти» в шапке в `frontend/src/middleware.ts` и `frontend/src/components/projects/app-header.tsx`
+- [X] T033 [P] [US1] Контракты `RegisterDto`, `LoginDto`, `UserDto` в `shared/src/contracts/auth.ts`
+- [X] T034 [P] [US1] Доменный класс `User` без поля пароля наружу (`data-model.md` → `User.name`, `User.email`, `User.passwordHash`) в `backend/src/modules/users/entities/user.entity.ts`
+- [X] T035 [US1] `UsersRepository implements IRepository<User>`: `findByEmail` (`User.email` сравнивается в нижнем регистре) в `backend/src/modules/users/users.repository.ts`; `UsersService` и `UsersModule` в `backend/src/modules/users/users.service.ts`, `users.module.ts`
+- [X] T036 [P] [US1] DTO с `class-validator`: имя по `data-model.md` → `User.name`, email по `User.email`; правило пароля из FR-003 (≥ 8 символов, есть буква и цифра) → `AUTH_WEAK_PASSWORD` в `backend/src/modules/auth/dto/register.dto.ts`, `login.dto.ts`
+- [X] T037 [US1] `RefreshSessionsRepository` (хранит хеш токена `data-model.md` → `RefreshSession.tokenHash`, срок `RefreshSession.expiresAt`, отзыв `RefreshSession.revokedAt`) в `backend/src/modules/auth/auth.repository.ts`
+- [X] T038 [US1] `AuthService`: регистрация (argon2id → `User.passwordHash`, `AUTH_EMAIL_TAKEN`), вход (`AUTH_INVALID_CREDENTIALS` без уточнения поля), выпуск access на 15 мин и refresh на 7 дней, ротация refresh, выход с отзывом сессии (research.md R2) в `backend/src/modules/auth/auth.service.ts`
+- [X] T039 [US1] `AuthController`: `/auth/register`, `/login`, `/refresh`, `/logout`, `/me` по contracts/rest-api.md; httpOnly-cookie `SameSite=Lax`, `Secure` в production в `backend/src/modules/auth/auth.controller.ts`, `auth.module.ts`
+- [X] T040 [US1] `JwtAuthGuard` (глобальный, с декоратором `@Public()`): при отсутствии, истечении или отзыве токена бросает только `UnauthorizedException` с кодом `AUTH_REQUIRED` (не исключение NestJS, принцип III); декоратор `@CurrentUser()` в `backend/src/common/guards/jwt-auth.guard.ts`, `backend/src/common/decorators/public.decorator.ts`, `current-user.decorator.ts`
+- [X] T041 [P] [US1] Хуки `useSession`, `useLogin`, `useRegister`, `useLogout` в `frontend/src/features/auth/use-session.ts` и `frontend/src/features/auth/api.ts`
+- [X] T042 [P] [US1] Страницы входа и регистрации: валидация полей, сообщения ошибок на русском в `frontend/src/app/(auth)/login/page.tsx`, `frontend/src/app/(auth)/register/page.tsx`
+- [X] T043 [US1] Защита маршрутов: без сессии — переход на `/login`, после входа — на `/projects`, кнопка «Выйти» в шапке в `frontend/src/middleware.ts` и `frontend/src/components/projects/app-header.tsx`
 
 **Checkpoint**: регистрация, вход и выход работают; `/api/auth/me` без cookie отвечает 401.
 

@@ -1,8 +1,6 @@
-/** Временная стартовая страница — заменится переадресацией после реализации входа (US1). */
+import { redirect } from 'next/navigation';
+
+/** Корень сайта ведёт к проектам; без сессии middleware отправит на вход. */
 export default function HomePage() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-semibold">Хлопушка</h1>
-    </main>
-  );
+  redirect('/projects');
 }
