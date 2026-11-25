@@ -189,6 +189,7 @@ classDiagram
 | `ROLE_FORBIDDEN` | AccessDenied | у роли нет права на действие |
 | `USER_NOT_FOUND` | NotFound | нет пользователя с таким email |
 | `MEMBER_ALREADY_EXISTS` | Validation | пользователь уже участник |
+| `MEMBER_NOT_FOUND` | NotFound | пользователь не участник проекта (смена роли, удаление) |
 | `LAST_PRODUCER` | Validation | попытка убрать последнего продюсера |
 | `TASK_NOT_FOUND` | NotFound | задачи нет |
 | `VALIDATION` | Validation | общая ошибка формата полей; `value` = список полей |

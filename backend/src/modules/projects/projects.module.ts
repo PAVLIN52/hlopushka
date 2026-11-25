@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { PROJECT_ACCESS_RESOLVER } from '@/common/guards/project-access.interface';
 
+import { UsersModule } from '@/modules/users/users.module';
+
 import { ProjectsController } from './projects.controller';
 import { ProjectsRepository } from './projects.repository';
 import { ProjectsService } from './projects.service';
@@ -11,6 +13,7 @@ import { ProjectsService } from './projects.service';
  * работал и в модулях доски и задач.
  */
 @Module({
+  imports: [UsersModule],
   controllers: [ProjectsController],
   providers: [
     ProjectsRepository,

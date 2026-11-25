@@ -30,9 +30,9 @@ describe('Проекты и доступ к ним (US2, FR-006, FR-007, FR-011)
   const createProject = async (user: TestUser, body: Record<string, unknown> = { title: 'Клип' }): Promise<string> =>
     (await user.agent.post('/api/projects').send(body).expect(201)).body.id as string;
 
-  /** Добавляет участника напрямую в БД (эндпоинты участников — следующий этап). */
+  /** Аня (продюсер) добавляет участника через API. */
   const addMember = async (projectId: string, user: TestUser, role: Role): Promise<void> => {
-    await app.get(PrismaService).projectMember.create({ data: { projectId, userId: user.id, role } });
+    await anya.agent.post(`/api/projects/${projectId}/members`).send({ email: user.email, role }).expect(201);
   };
 
   describe('без входа', () => {

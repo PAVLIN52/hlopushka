@@ -1,4 +1,5 @@
 import type { Role } from '../enums';
+
 import type { UserDto } from './auth';
 
 /** Тело `POST /projects`. Дата сдачи — в формате `YYYY-MM-DD`. */

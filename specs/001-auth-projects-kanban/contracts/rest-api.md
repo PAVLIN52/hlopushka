@@ -58,8 +58,8 @@
 |---|---|---|---|---|
 | GET | `/projects/:id/members` | P E C Cl | — | `200 Member[]` (`{ user, role, joinedAt }`) |
 | POST | `/projects/:id/members` | P | `{ email, role }` | `201 Member` · 404 `USER_NOT_FOUND` · 400 `MEMBER_ALREADY_EXISTS` |
-| PATCH | `/projects/:id/members/:userId` | P | `{ role }` | `200 Member` · 400 `LAST_PRODUCER` |
-| DELETE | `/projects/:id/members/:userId` | P | — | `204` · 400 `LAST_PRODUCER`. Задачи, где этот пользователь был исполнителем, остаются без исполнителя |
+| PATCH | `/projects/:id/members/:userId` | P | `{ role }` | `200 Member` · 400 `LAST_PRODUCER` · 404 `MEMBER_NOT_FOUND` |
+| DELETE | `/projects/:id/members/:userId` | P | — | `204` · 400 `LAST_PRODUCER` · 404 `MEMBER_NOT_FOUND`. Задачи, где этот пользователь был исполнителем, остаются без исполнителя |
 
 ## Board & Tasks
 
