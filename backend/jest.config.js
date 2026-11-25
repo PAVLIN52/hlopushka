@@ -14,9 +14,16 @@ module.exports = {
   projects: [
     // Юнит-тесты ООП-ядра: без БД и сети (принцип I).
     { ...base, displayName: 'core', rootDir: __dirname, testMatch: ['<rootDir>/src/core/**/*.spec.ts'] },
-    // Юнит-тесты модулей (доменные классы и т.п.), тоже без БД.
-    { ...base, displayName: 'unit', rootDir: __dirname, testMatch: ['<rootDir>/src/modules/**/*.spec.ts'] },
+    // Юнит-тесты модулей и common (доменные классы, guards), тоже без БД.
+    { ...base, displayName: 'unit', rootDir: __dirname, testMatch: ['<rootDir>/src/modules/**/*.spec.ts', '<rootDir>/src/common/**/*.spec.ts'] },
     // Интеграционные тесты с тестовой БД PostgreSQL.
-    { ...base, displayName: 'e2e', rootDir: __dirname, testMatch: ['<rootDir>/test/**/*.e2e-spec.ts'] },
+    {
+      ...base,
+      displayName: 'e2e',
+      rootDir: __dirname,
+      testMatch: ['<rootDir>/test/**/*.e2e-spec.ts'],
+      globalSetup: '<rootDir>/test/setup/global-setup.ts',
+      setupFiles: ['<rootDir>/test/setup/apply-env.ts'],
+    },
   ],
 };

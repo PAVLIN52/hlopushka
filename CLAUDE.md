@@ -9,7 +9,9 @@
   тестирования, через pull request `develop → main`. Напрямую в `main` ничего не
   коммитить и не пушить.
 - Перед PR в `main` должны пройти:
-  - юнит-тесты ядра (`npm run test:core -w backend`);
+  - юнит-тесты (`npm run test:core -w backend`, `npm run test:unit -w backend`);
+  - e2e-тесты бэкенда на отдельной базе `hlopushka_test` (`npm run test:e2e -w backend`,
+    нужен запущенный Postgres);
   - линтеры (`npm run lint`, `npm run lint -w frontend`);
   - сборка (`npm run build`);
   - ручная проверка сценариев из `specs/<фича>/quickstart.md`.

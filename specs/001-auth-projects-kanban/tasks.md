@@ -141,11 +141,11 @@ Project Structure).
 
 ### Implementation for User Story 2
 
-- [ ] T044 [P] [US2] Контракты `CreateProjectDto`, `ProjectDto`, `MemberDto`, `AddMemberDto`, `UpdateMemberRoleDto` в `shared/src/contracts/projects.ts`
-- [ ] T045 [P] [US2] Доменные классы `Project` и `ProjectMember` (`data-model.md` → `Project.title`, `Project.dueDate`, `ProjectMember.role`) в `backend/src/modules/projects/entities/project.entity.ts`, `project-member.entity.ts`
+- [X] T044 [P] [US2] Контракты `CreateProjectDto`, `ProjectDto`, `MemberDto`, `AddMemberDto`, `UpdateMemberRoleDto` в `shared/src/contracts/projects.ts`
+- [X] T045 [P] [US2] Доменные классы `Project` и `ProjectMember` (`data-model.md` → `Project.title`, `Project.dueDate`, `ProjectMember.role`) в `backend/src/modules/projects/entities/project.entity.ts`, `project-member.entity.ts`
 - [ ] T046 [P] [US2] DTO проекта и участника с валидацией (`data-model.md` → `Project.title`, `Project.description`, `Project.dueDate`, `ProjectMember.role`) в `backend/src/modules/projects/dto/create-project.dto.ts`, `update-project.dto.ts`, `add-member.dto.ts`, `update-member-role.dto.ts`
 - [ ] T047 [US2] `ProjectsRepository implements IRepository<Project>` + методы участников (`findMember`, `countProducers`, `addMember`, `updateRole`, `removeMember` со сбросом `Task.assigneeId` в null в той же транзакции) в `backend/src/modules/projects/projects.repository.ts`
-- [ ] T048 [US2] Декоратор `@ProjectRoles(...)` и `ProjectRoleGuard`: проверка участия (`PROJECT_NOT_FOUND`, `PROJECT_ACCESS_DENIED`) и роли (`ROLE_FORBIDDEN`) по матрице FR-011; роль кладётся в `request.membership` в `backend/src/common/guards/project-role.guard.ts`, `backend/src/common/decorators/roles.decorator.ts`
+- [X] T048 [US2] Декоратор `@ProjectAccess(action)` и `ProjectAccessGuard`: проверка участия (`PROJECT_NOT_FOUND`, `PROJECT_ACCESS_DENIED`) и права роли (`ROLE_FORBIDDEN`) по матрице FR-011 (`ProjectPermissions`); guard зависит от интерфейса `IProjectAccessResolver`, участие кладётся в `request.membership` в `backend/src/common/guards/project-access.guard.ts`, `project-access.interface.ts`, `backend/src/common/decorators/project-access.decorator.ts`
 - [ ] T049 [US2] `ProjectsService`: создание проекта (создатель получает роль PRODUCER), список только своих проектов, добавление участника по email (`USER_NOT_FOUND`, `MEMBER_ALREADY_EXISTS`), смена роли и удаление с проверкой `LAST_PRODUCER` в транзакции в `backend/src/modules/projects/projects.service.ts`
 - [ ] T050 [US2] `ProjectsController`: эндпоинты Projects и Members из contracts/rest-api.md в `backend/src/modules/projects/projects.controller.ts`, `projects.module.ts`
 - [ ] T051 [P] [US2] Хуки `useProjects`, `useProject`, `useCreateProject`, `useMembers`, `useAddMember`, `useUpdateMemberRole`, `useRemoveMember` в `frontend/src/features/projects/api.ts`, `use-projects.ts`, `use-members.ts`

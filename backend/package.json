@@ -6,7 +6,7 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "node dist/main.js",
-    "test": "npm run test:core",
+    "test": "jest --runInBand",
     "test:core": "jest --selectProjects core --passWithNoTests",
     "test:unit": "jest --selectProjects unit --passWithNoTests",
     "test:e2e": "jest --selectProjects e2e --runInBand",

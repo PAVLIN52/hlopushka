@@ -58,3 +58,18 @@ export enum Priority {
   HIGH = 'HIGH',
   CRITICAL = 'CRITICAL',
 }
+
+/**
+ * Действия в проекте, на которые проверяются права (FR-011).
+ * Матрица «роль → действие» живёт на бэкенде в `ProjectPermissions`.
+ */
+export enum ProjectAction {
+  /** Смотреть проект, доску и участников. */
+  VIEW = 'VIEW',
+  /** Создавать, редактировать и перемещать задачи, отменять перемещения. */
+  EDIT_TASKS = 'EDIT_TASKS',
+  /** Удалять задачи. */
+  DELETE_TASKS = 'DELETE_TASKS',
+  /** Изменять проект и управлять участниками. */
+  MANAGE_PROJECT = 'MANAGE_PROJECT',
+}
